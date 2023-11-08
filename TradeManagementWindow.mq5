@@ -301,7 +301,14 @@ void TradeManagementWindow::updateOpenRisk(void) {
             float slPrice = m_position.StopLoss();
             float openPrice = m_position.PriceOpen();
             float point = Point();
-            float slPoints = MathAbs(slPrice-openPrice)/Point();
+            float slPoints = (slPrice-openPrice)/Point();
+            // the logic here is basically twisted
+            // if we have a sell we want a negative value when the SL is still
+            //above the entry price to make the end result negative
+            if (m_position.PositionType() == POSITION_TYPE_SELL) {
+               slPoints = (openPrice-slPrice)/Point();
+            }
+            
             float volume = m_position.Volume();
             totalVolume += volume;
             double positionMoneyRisk = getRiskInMoney(volume, slPoints);
